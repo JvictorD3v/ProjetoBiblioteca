@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Http;
 
 namespace Biblioteca.Controllers
 {
@@ -8,7 +8,7 @@ namespace Biblioteca.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if(string.IsNullOrEmpty(HttpContext.Session.GetString("user")))
+            if(string.IsNullOrEmpty(HttpContext.Session.GetString("Login")))
             {
                 filterContext.HttpContext.Response.Redirect("/Home/Login");
             }

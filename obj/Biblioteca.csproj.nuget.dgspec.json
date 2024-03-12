@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Biblioteca\\Biblioteca.csproj": {}
+    "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Atv02_JoãoVictor\\Biblioteca\\Biblioteca.csproj": {}
   },
   "projects": {
-    "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Biblioteca\\Biblioteca.csproj": {
+    "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Atv02_JoãoVictor\\Biblioteca\\Biblioteca.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Biblioteca\\Biblioteca.csproj",
+        "projectUniqueName": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Atv02_JoãoVictor\\Biblioteca\\Biblioteca.csproj",
         "projectName": "Biblioteca",
-        "projectPath": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Biblioteca\\Biblioteca.csproj",
+        "projectPath": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Atv02_JoãoVictor\\Biblioteca\\Biblioteca.csproj",
         "packagesPath": "C:\\Users\\claum\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Biblioteca\\obj\\",
+        "outputPath": "C:\\Users\\claum\\OneDrive\\Área de Trabalho\\Atv02_JoãoVictor\\Biblioteca\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\claum\\AppData\\Roaming\\NuGet\\NuGet.Config"

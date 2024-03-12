@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Biblioteca.Controllers
 {
@@ -33,15 +29,21 @@ namespace Biblioteca.Controllers
         [HttpPost]
         public IActionResult Login(string login, string senha)
         {
-            if(Autenticacao.verificaLoginSenha(login,senha,this))
-            {
+            if(Autenticacao.verificaLoginSenha(login, senha, this))
+            {  
                 return RedirectToAction("Index");
             }
             else
             {
-                ViewData["Erro"] = "Usuario/Senha incorreta";
+                ViewData["Erro"] = "Senha inválida";
                 return View();
             }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.SetString ("Login", "");
+            return RedirectToAction ("Index");
         }
 
         public IActionResult Privacy()

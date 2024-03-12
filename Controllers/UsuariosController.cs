@@ -1,13 +1,23 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Biblioteca.Models;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using Biblioteca.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
 {
-    public class UsuariosController
+    public class UsuariosController : Controller
     {
+        public IActionResult Sair()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult administrador()
+        {
+            return View();
+        }
+
         public IActionResult ListaDeUsuarios()
         {
             Autenticacao.CheckLogin(this);
@@ -16,78 +26,60 @@ namespace Biblioteca.Controllers
             return View(new UsuarioService().Listar());
         }
 
-        public IActionResult editarUsuario(int id)
-        {
-            Usuario u = new UsuarioService().Listar(id);
-            return View(u);
-        }
-
-        [HttPost]
-        public IActionResult editarUsuario(Usuario userEditado)
-        {
-            UsuarioService us = new UsuarioService();
-            us.editarUsuario(userEditado);
-            return RedirectToAction("ListaDeUsuarios");
-        }
-
         public IActionResult RegistrarUsuarios()
         {
             Autenticacao.CheckLogin(this);
             Autenticacao.verificaSeUsuarioEAdmin(this);
+
             return View();
         }
 
-        [HttPost]
+        [HttpPost]
         public IActionResult RegistrarUsuarios(Usuario novoUser)
         {
-            Autenticacao.CheckLogin(this);
-            Autenticacao.verificaSeUsuarioEAdmin(this);
-            
             novoUser.Senha = Criptografo.TextoCriptografado(novoUser.Senha);
 
-            UsuarioService us = new UsuarioService();
-            us.incluirUsuario(novoUser);
+            new UsuarioService().incluirUsuario(novoUser);
 
-            return RedirectToAction("cadastroRealizado");
+            return RedirectToAction("ListaDeUsuarios");
         }
 
-        public IActionResult ExcluirUsuario(int id)
-        {
-            return View(new UsuarioService().Listar(id));
-        }
-        [HttPost]
-        public IActionResult ExcluirUsuario(string decisao, int id)
-        {
-            if (decisao =="EXCLUIR")
-            {
-                ViewData["Mensagem"] = "Exclusão de Usuário " + new UsuarioService().Listar(id).Nome + " realizada com sucesso";
-                new UsuarioService().excluirUsuario(id);
-                return View("ListaDeUsuarios", new UsuarioService().Listar());
-            }else
-            {
-                ViewData["Mensagem"] = "Exclusão cancelada";
-                return View("ListaDeUsuarios", new UsuarioService().Listar());
-            }
-        }
-
-        public IActionResult cadastroRealizado()
+        public IActionResult EditarUsuario(int Id)
         {
             Autenticacao.CheckLogin(this);
             Autenticacao.verificaSeUsuarioEAdmin(this);
-            return View();
+            return View(new UsuarioService().Listar(Id));
         }
 
-        public IActionResult NeedAdmin()
+        [HttpPost]
+        public IActionResult EditarUsuario(Usuario userEditado)
+        {
+            new UsuarioService().editarUsuario(userEditado);
+            return RedirectToAction("ListaDeUsuarios");
+        }
+
+        public IActionResult ExcluirUsuario(int Id)
+        {
+            new UsuarioService().excluirUsuario(Id);
+            return RedirectToAction("ListaDeUsuarios");
+        }
+
+        public IActionResult Listagem (string tipoFiltro, string filtro, int p = 1)
         {
             Autenticacao.CheckLogin(this);
-            return View();
+            Filtragem objFiltro = null;
+            if (!string.IsNullOrEmpty (filtro))
+            {
+                objFiltro = new Filtragem();
+                objFiltro.Filtro = filtro;
+                objFiltro.TipoFiltro = tipoFiltro;
+            }
+            int quantidadePorPagina = 5;
+            UsuarioService usuarioService = new UsuarioService();
+            int totalDeRegistros = usuarioService.NumeroDeUsuarios();
+            ICollection<Usuario> lista = usuarioService.ListarTodos (p, quantidadePorPagina, objFiltro);
+            ViewData["NroPaginas"] = (int) Math.Ceiling ((double) totalDeRegistros / quantidadePorPagina);
+            return View(lista);
         }
-
-        public IActionResult Sair()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index","Home");
-        }
-
     }
 }

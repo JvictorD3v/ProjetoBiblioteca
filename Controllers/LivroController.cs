@@ -1,6 +1,7 @@
+using System;
+using System.Collections.Generic;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace Biblioteca.Controllers
 {
@@ -29,21 +30,22 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Listagem");
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro, string itensPorPagina, int NumDaPagina, int PaginaAtual)
+        public IActionResult Listagem(string tipoFiltro, string filtro, int p = 1)
         {
             Autenticacao.CheckLogin(this);
-            FiltrosLivros objFiltro = null;
+            Filtragem objFiltro = null;
             if(!string.IsNullOrEmpty(filtro))
             {
-                objFiltro = new FiltrosLivros();
+                objFiltro = new Filtragem();
                 objFiltro.Filtro = filtro;
                 objFiltro.TipoFiltro = tipoFiltro;
             }
-                ViewData["livrosPorPagina"] = (string.IsNullOrEmpty(itensPorPagina) ? 10 : Int32.Parse(itensPorPagina));
-                ViewData["PaginaAtual"] = (PaginaAtual !=0 ? PaginaAtual : 1);
-
+            int quantidadePorPagina = 10;
             LivroService livroService = new LivroService();
-            return View(livroService.ListarTodos(objFiltro));
+            int totalDeRegistros = livroService.NumeroDeLivros();
+            ICollection<Livro> lista = livroService.ListarTodos (p, quantidadePorPagina, objFiltro);
+            ViewData["NroPaginas"] = (int) Math.Ceiling ((double) totalDeRegistros / quantidadePorPagina);
+            return View(lista);
         }
 
         public IActionResult Edicao(int id)

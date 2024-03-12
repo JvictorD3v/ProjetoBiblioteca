@@ -1,8 +1,7 @@
-using Biblioteca.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+using Biblioteca.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
 {
@@ -28,31 +27,33 @@ namespace Biblioteca.Controllers
             
             if(viewModel.Emprestimo.Id == 0)
             {
-                emprestimoService.Inserir(viewModel.Emprestimo);
+                emprestimoService.Inserir (viewModel.Emprestimo);
             }
             else
             {
-                emprestimoService.Atualizar(viewModel.Emprestimo);
+                emprestimoService.Atualizar (viewModel.Emprestimo);
             }
             return RedirectToAction("Listagem");
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro, string itensPorPagina, int NumDaPagina, int PaginaAtual)
+        public IActionResult Listagem(string tipoFiltro, string filtro, int p = 1)
         {
             Autenticacao.CheckLogin(this);
 
-            FiltrosEmprestimos objFiltro = null;
+            Filtragem objFiltro = null;
             if(!string.IsNullOrEmpty(filtro))
             {
-                objFiltro = new FiltrosEmprestimos();
+                objFiltro = new Filtragem();
                 objFiltro.Filtro = filtro;
                 objFiltro.TipoFiltro = tipoFiltro;
             }
-                ViewData["emprestimosPorPagina"] = (string.IsNullOrEmpty(itensPorPagina) ? 10 : Int32.Parse(itensPorPagina));
-                ViewData["PaginaAtual"] = (PaginaAtual !=0 ? PaginaAtual : 1);
+                int quantidadePorPagina = 5;
+                EmprestimoService emprestimoService = new EmprestimoService();
+                int totalDeRegistros = emprestimoService.NumeroDeEmprestimos();
+                ICollection<Emprestimo> lista =  emprestimoService.ListarTodos(p, quantidadePorPagina, objFiltro);
+                ViewData["NroPaginas"] = (int) Math.Ceiling ((double) totalDeRegistros / quantidadePorPagina);
 
-            EmprestimoService emprestimoService = new EmprestimoService();
-            return View(emprestimoService.ListarTodos(objFiltro));
+                return View(lista);
         }
 
         public IActionResult Edicao(int id)
@@ -64,7 +65,8 @@ namespace Biblioteca.Controllers
             Emprestimo e = em.ObterPorId(id);
 
             CadEmprestimoViewModel cadModel = new CadEmprestimoViewModel();
-            cadModel.Livros = livroService.ListarTodos();
+            cadModel.Livros = livroService.ListarDisponiveis();
+            cadModel.Livros.Add (livroService.ObterPorId (id));
             cadModel.Emprestimo = e;
             
             return View(cadModel);
